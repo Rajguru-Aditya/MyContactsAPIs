@@ -1,8 +1,10 @@
+const asyncHandler = require("express-async-handler");
+
 // @desc Get all contacts
 // @route GET /api/contacts
 // @access Public
 
-const getContacts = (req, res) => {
+const getContacts = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: "All contacts fetched",
     data: [
@@ -14,13 +16,19 @@ const getContacts = (req, res) => {
       },
     ],
   });
-};
+});
 
 // @desc Create new contact
 // @route POST /api/contacts
 // @access Public
 
-const createContact = (req, res) => {
+const createContact = asyncHandler(async (req, res) => {
+  console.log("Request body: ", req.body);
+  const { name, email, phone } = req.body;
+  if (!name || !email || !phone) {
+    res.status(400);
+    throw new Error("Please provide name, email and phone");
+  }
   res.status(200).json({
     message: "Create contact",
     data: [
@@ -32,13 +40,13 @@ const createContact = (req, res) => {
       },
     ],
   });
-};
+});
 
 // @desc Get single contact
 // @route GET /api/contacts/:id
 // @access Public
 
-const getContact = (req, res) => {
+const getContact = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: `Get contact for ${req.params.id}`,
     data: [
@@ -50,13 +58,13 @@ const getContact = (req, res) => {
       },
     ],
   });
-};
+});
 
 // @desc Update contact
 // @route PUT /api/contacts/:id
 // @access Public
 
-const updateContact = (req, res) => {
+const updateContact = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: `Update contact for ${req.params.id}`,
     data: [
@@ -68,13 +76,13 @@ const updateContact = (req, res) => {
       },
     ],
   });
-};
+});
 
 // @desc Delete contact
 // @route DELETE /api/contacts/:id
 // @access Public
 
-const deleteContact = (req, res) => {
+const deleteContact = asyncHandler(async (req, res) => {
   res.status(200).json({
     message: `Delete contact for ${req.params.id}`,
     data: [
@@ -86,7 +94,7 @@ const deleteContact = (req, res) => {
       },
     ],
   });
-};
+});
 
 module.exports = {
   getContacts,
