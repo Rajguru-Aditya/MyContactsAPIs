@@ -1,20 +1,15 @@
 const asyncHandler = require("express-async-handler");
+const Contact = require("../models/contactModels");
 
 // @desc Get all contacts
 // @route GET /api/contacts
 // @access Public
 
 const getContacts = asyncHandler(async (req, res) => {
+  const contacts = await Contact.find();
   res.status(200).json({
     message: "All contacts fetched",
-    data: [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "abc@gmail.com",
-        phone: "111-111-1111",
-      },
-    ],
+    data: contacts,
   });
 });
 
@@ -29,16 +24,17 @@ const createContact = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Please provide name, email and phone");
   }
+  const contact = new Contact({
+    name,
+    email,
+    phone,
+  });
+
+  const createdContact = await contact.save();
+
   res.status(200).json({
     message: "Create contact",
-    data: [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "abc@gmail.com",
-        phone: "111-111-1111",
-      },
-    ],
+    data: createdContact,
   });
 });
 
@@ -47,16 +43,15 @@ const createContact = asyncHandler(async (req, res) => {
 // @access Public
 
 const getContact = asyncHandler(async (req, res) => {
+  const contact = await Contact.findById(req.params.id);
+
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
   res.status(200).json({
     message: `Get contact for ${req.params.id}`,
-    data: [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "abc@gmail.com",
-        phone: "111-111-1111",
-      },
-    ],
+    data: contact,
   });
 });
 
@@ -65,16 +60,24 @@ const getContact = asyncHandler(async (req, res) => {
 // @access Public
 
 const updateContact = asyncHandler(async (req, res) => {
+  const contact = await Contact.findById(req.params.id);
+
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+
+  const updatedContact = await Contact.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+    }
+  );
+
   res.status(200).json({
     message: `Update contact for ${req.params.id}`,
-    data: [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "abc@gmail.com",
-        phone: "111-111-1111",
-      },
-    ],
+    data: updatedContact,
   });
 });
 
@@ -83,16 +86,18 @@ const updateContact = asyncHandler(async (req, res) => {
 // @access Public
 
 const deleteContact = asyncHandler(async (req, res) => {
+  const contact = await Contact.findById(req.params.id);
+
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact not found");
+  }
+
+  // delete user
+  await contact.deleteOne();
+
   res.status(200).json({
     message: `Delete contact for ${req.params.id}`,
-    data: [
-      {
-        id: 1,
-        name: "John Doe",
-        email: "abc@gmail.com",
-        phone: "111-111-1111",
-      },
-    ],
   });
 });
 

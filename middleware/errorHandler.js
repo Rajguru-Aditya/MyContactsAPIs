@@ -2,7 +2,7 @@ const { constants } = require("../constants");
 
 const errorHandler = (err, req, res, next) => {
   console.log(err.stack);
-  const statusCode = err.statusCode || 500;
+  const statusCode = res.statusCode || constants.INTERNAL_SERVER_ERROR;
   const message = err.message || "Internal Server Error";
   switch (statusCode) {
     case constants.VALIDATION_FAILED:
